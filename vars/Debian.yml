@@ -1,0 +1,4 @@
+---
+motd_to_remove:
+  - '/etc/update-motd.d/10-uname'
+  - '/etc/motd'

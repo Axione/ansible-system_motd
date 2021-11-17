@@ -1,0 +1,25 @@
+---
+- include: setup-Redhat-7.yml
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'
+
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: 'Configure motd'
+  become: true
+  template:
+    src: '{{ item }}.j2'
+    dest: '/etc/update-motd.d/{{ item }}'
+    owner: root
+    group: root
+    mode: '755'
+  with_items:
+    - "{{ motd_to_add }}"
+
+- name: 'Remove motd'
+  become: true
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - "{{ motd_to_remove }}"

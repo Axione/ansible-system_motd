@@ -1,0 +1,5 @@
+---
+motd_color: '202'
+motd_to_add:
+  - 00-infos
+motd_to_remove: []

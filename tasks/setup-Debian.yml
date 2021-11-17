@@ -1,0 +1,5 @@
+---
+- name: 'DEBIAN | Install motd'
+  package:
+    name: update-motd
+  when: ansible_distribution == "Ubuntu"

@@ -1,0 +1,32 @@
+---
+- name: REDHAT | Ensure pam and openssh-server are installed
+  dnf:
+    name:
+      - pam
+      - openssh-server
+    state: present
+
+- name: REDHAT | Install dynamic motd for pam package
+  yum:
+    name: "https://github.com/gdubicki/centos-pam-with-update-motd/releases/download/1.1.8-1023.1/pam-1.1.8-1023.el7.x86_64.rpm"
+    state: present
+
+- name: REDHAT | Delete default /etc/motd
+  ansible.builtin.file:
+    path: /etc/motd
+    state: absent
+
+- name: REDHAT | Add dynamic motd on pam
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/sshd
+    regexp: '^session optional pam_motd.so motd=/run/motd.dynamic$'
+    line: 'session optional pam_motd.so motd=/run/motd.dynamic'
+
+- name: "REDHAT | Allow execution of update-motd"
+  command: |
+    set -o pipefail
+    semanage permissive -a sshd_t
+    ausearch -c 'sshd' --raw | audit2allow -M my-sshd
+    semodule -i my-sshd.pp
+  changed_when: false
+  failed_when: false
