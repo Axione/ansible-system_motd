@@ -1,0 +1,5 @@
+---
+- name: 'UBUNTU | Install motd'
+  ansible.builtin.package:
+    name: update-motd
+  when: ansible_distribution == "Ubuntu"

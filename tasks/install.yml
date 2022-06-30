@@ -1,11 +1,11 @@
 ---
-- name: "Include Redhat tasks"
+- name: "Include Redhat-7 tasks"
   include: setup-Redhat-7.yml
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'
 
-- name: "Include Debian tasks"
-  include: setup-Debian.yml
-  when: ansible_os_family == 'Debian'
+- name: "Include Ubuntu tasks"
+  include: setup-Ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
 
 - name: 'Configure motd'
   become: true
@@ -21,7 +21,7 @@
 - name: 'Remove motd'
   become: true
   ansible.builtin.file:
-    path: '{{ item }}'
+    path: '/etc/update-motd.d/{{ item }}'
     state: absent
   with_items:
     - "{{ motd_to_remove }}"
