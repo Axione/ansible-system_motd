@@ -1,6 +1,6 @@
 ---
 - name: "REDHAT7 | Ensure pam and openssh-server are installed"
-  ansible.builtin.dnf:
+  ansible.builtin.yum:
     name:
       - pam
       - openssh-server

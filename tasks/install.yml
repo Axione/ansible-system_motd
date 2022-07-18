@@ -1,10 +1,10 @@
 ---
 - name: "Include Redhat-7 tasks"
-  include: setup-Redhat-7.yml
+  import_tasks: setup-Redhat-7.yml
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'
 
 - name: "Include Ubuntu tasks"
-  include: setup-Ubuntu.yml
+  import_tasks: setup-Ubuntu.yml
   when: ansible_distribution == "Ubuntu"
 
 - name: 'Configure motd'
