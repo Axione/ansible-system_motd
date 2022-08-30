@@ -7,7 +7,13 @@
   import_tasks: setup-Ubuntu.yml
   when: ansible_distribution == "Ubuntu"
 
-- name: 'Configure motd'
+- name: 'Remove default motd'
+  become: true
+  ansible.builtin.file:
+    path: '/etc/motd'
+    state: absent
+
+- name: 'Add scripts on update-motd.d'
   become: true
   ansible.builtin.template:
     src: '{{ item }}.j2'
@@ -18,7 +24,7 @@
   with_items:
     - "{{ motd_to_add }}"
 
-- name: 'Remove motd'
+- name: 'Remove scripts on update-motd.d'
   become: true
   ansible.builtin.file:
     path: '/etc/update-motd.d/{{ item }}'
