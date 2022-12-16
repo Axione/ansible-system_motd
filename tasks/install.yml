@@ -1,7 +1,7 @@
 ---
-- name: "Include Redhat-7 tasks"
-  import_tasks: setup-Redhat-7.yml
-  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'
+#- name: "Include Redhat-7 tasks"
+#  import_tasks: setup-Redhat-7.yml
+#  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'
 
 - name: "Include Ubuntu tasks"
   import_tasks: setup-Ubuntu.yml
@@ -12,6 +12,16 @@
   ansible.builtin.file:
     path: '/etc/motd'
     state: absent
+
+- name: 'READHAT | Add motd folder'
+  become: true
+  ansible.builtin.file:
+    path: '/etc/update-motd.d/'
+    state: directory
+    owner: root
+    group: root
+    mode: '755'
+  when: ansible_os_family == 'RedHat'
 
 - name: 'Add scripts on update-motd.d'
   become: true
@@ -31,3 +41,17 @@
     state: absent
   with_items:
     - "{{ motd_to_remove }}"
+
+- name: 'REDHAT | Add script on profile'
+  ansible.builtin.lineinfile:
+    path: /etc/profile
+    regexp: '^if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi'
+    line: if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi
+  when: ansible_os_family == 'RedHat'
+
+- name: 'REDHAT8 | remove cockpit motd'
+  become: true
+  ansible.builtin.file:
+    path: '/etc/motd.d/cockpit'
+    state: absent
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '8'
