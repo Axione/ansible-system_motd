@@ -1,12 +1,15 @@
 ---
 motd_to_remove:
+  - 00-header
   - 10-help-text
   - 50-motd-news
-  - 80-livepatch
   - 50-landscape-sysinfo
   - 51-cloudguest
+  - 80-livepatch
   - 85-fwupd
+  - 88-esm-announce
   - 90-updates-available
+  - 91-contract-ua-esm-status
   - 91-release-upgrade
   - 92-unattended-upgrades
   - 95-hwe-eol
