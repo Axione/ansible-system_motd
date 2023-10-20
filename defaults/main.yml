@@ -1,4 +1,6 @@
 ---
+motd_check_boot_device: true
+motd_boot_device: sda
 motd_to_add:
   - 00-infos
 motd_to_remove:

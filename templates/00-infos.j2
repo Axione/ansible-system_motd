@@ -126,10 +126,21 @@ RELEASE="{{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansibl
 # disk usage
 DISK_USAGE=$(df -Ph | grep mapper | awk '/\// {print $6,"used:",$5,"free:",$4}' | sed ':a;N;$!ba;s/\n/ - /g')
 
+
 # get processes
 PSA=$(ps -Afl | wc -l)
 
 ###################################
+BOOT_DISK_CODE=0
+{% if motd_check_boot_device is sameas true %}
+BOOT_DEVICE={{ motd_boot_device }}
+BOOT_DISK=$(df | grep "/boot" | awk '{print $1}' | grep "$BOOT_DEVICE" | wc -l)
+if [ "$BOOT_DISK" -eq 0 ]; then
+    alert "Wrong disk on boot, please reboot your system to fix"
+    BOOT_DISK_CODE=100
+fi
+{% endif %}
+
 MSG_UPTIME=$(colorize_uptime)
 UPTIME_CODE=$?
 MSG_LOAD=$(colorize_load)
@@ -140,10 +151,10 @@ MSG_SWAP=$(colorize_swap)
 SWAP_CODE=$?
 
 STATE=0
-STATE=$((UPTIME_CODE + LOAD_CODE + MEMORY_CODE + SWAP_CODE))
+STATE=$((UPTIME_CODE + LOAD_CODE + MEMORY_CODE + SWAP_CODE + BOOT_DISK_CODE))
 
 if [ "$STATE" -ge 100 ]; then MARGIN_COLOR=$MARGIN_ALERT_COLOR;
-elif [ "$STATE" -gt 1 ] ; then MARGIN_COLOR=$MARGIN_WARNING_COLOR;
+elif [ "$STATE" -ge 1 ] ; then MARGIN_COLOR=$MARGIN_WARNING_COLOR;
 else MARGIN_COLOR=$MARGIN_COLOR;
 fi
 
