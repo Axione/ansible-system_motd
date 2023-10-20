@@ -32,7 +32,7 @@ colorize_uptime () {
   upMins=$((uptime/60%60))
   upSecs=$((uptime%60))
   UPTIME_FORMATTED="$upDays days, $upHours hours, $upMins minutes, $upSecs seconds"
-  if [[ $UPTIME_FORMATTED =~ "^0 days" ]]; then
+  if [[ "$UPTIME_FORMATTED" =~ ^[0]\ days ]]; then
     warning "${UPTIME_FORMATTED}"
     return 1
   else
