@@ -117,7 +117,7 @@ SYS_CORE=$(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo)
 SYS_CORE_X2=$(echo "$SYS_CORE" 2 | awk '{printf "%0.0f\n",$1*$2}')
 SYS_MEMORY=$(grep MemTotal /proc/meminfo | awk '{print $2}' | xargs -I {} echo "scale=0; {}/1024^2+1" | bc)
 HARDWARE="cpu: $SYS_CORE / memory: $SYS_MEMORY"
-IP=$(/sbin/ip -4 -o addr show scope global | awk '{gsub(/\/.*/,"",$4); print $4}' | grep -v "172.")
+IP=$(/sbin/ip -4 -o addr show scope global | awk '{gsub(/\/.*/,"",$4); print $4}' | grep -v "172." | sed ':a;N;$!ba;s/\n/ - /g')
 RELEASE="{{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_distribution_release }}"
 
 # get swap file details
