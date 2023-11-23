@@ -6,6 +6,10 @@
 - name: 'Install bc'
   ansible.builtin.package:
     name: bc
+  register: pkg_result
+  retries: 12
+  delay: 10
+  until: pkg_result is success
 
 - name: "Include Ubuntu tasks"
   import_tasks: setup-Ubuntu.yml

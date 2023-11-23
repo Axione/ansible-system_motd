@@ -5,11 +5,19 @@
       - pam
       - openssh-server
     state: present
+  register: pkg_result
+  retries: 12
+  delay: 10
+  until: pkg_result is success
 
 - name: "REDHAT7 | Install dynamic motd for pam package"
   ansible.builtin.yum:
     name: "https://github.com/gdubicki/centos-pam-with-update-motd/releases/download/1.1.8-1023.1/pam-1.1.8-1023.el7.x86_64.rpm"
     state: present
+  register: pkg_result
+  retries: 12
+  delay: 10
+  until: pkg_result is success
 
 - name: "REDHAT7 | Delete default /etc/motd"
   ansible.builtin.file:
