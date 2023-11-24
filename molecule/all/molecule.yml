@@ -17,6 +17,7 @@ platforms:
   - name: system-motd-ubuntu18
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:ubuntu18
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     capabilities: ['NET_ADMIN']
     volumes:
@@ -24,6 +25,7 @@ platforms:
   - name: system-motd-ubuntu20
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:ubuntu20
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     capabilities: ['NET_ADMIN']
     volumes:
@@ -33,6 +35,7 @@ platforms:
   - name: system-motd-ubuntu22
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:ubuntu22
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -41,12 +44,14 @@ platforms:
   - name: system-motd-debian10
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:debian10
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
   - name: system-motd-debian11
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:debian11
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -55,6 +60,7 @@ platforms:
   - name: system-motd-debian12
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:debian12
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -63,12 +69,14 @@ platforms:
   - name: system-motd-centos7
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:centos7
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
   - name: system-motd-rocky8
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:rocky8
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -77,12 +85,14 @@ platforms:
   - name: system-motd-oraclelinux7
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:oraclelinux7
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
   - name: system-motd-oraclelinux8
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:oraclelinux8
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -91,6 +101,7 @@ platforms:
   - name: system-motd-oraclelinux9
     pre_build_image: true
     image: lotusnoir/ansible_molecule_test_images:oraclelinux9
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
