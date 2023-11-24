@@ -134,7 +134,7 @@ PSA=$(ps -Afl | wc -l)
 PRIMARY_DISK_CODE=0
 {% if motd_check_boot_device is sameas true %}
 PRIMARY_DEVICE={{ motd_boot_device }}
-PRIMARY_DISK=$(df | awk '$NF == "/" { print $1}' | grep "$PRIMARY_DEVICE" | wc -l)
+PRIMARY_DISK=$(df | awk '$NF == "/" || $NF == "/boot" { print $1}' | grep "$PRIMARY_DEVICE" | wc -l)
 if [ "$PRIMARY_DISK" -eq 0 ]; then
     alert "Wrong disk on boot, please reboot your system to fix"
     PRIMARY_DISK_CODE=100
