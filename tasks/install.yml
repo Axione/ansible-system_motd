@@ -12,7 +12,7 @@
   until: pkg_result is success
 
 - name: "Include Ubuntu tasks"
-  import_tasks: setup-Ubuntu.yml
+  ansible.builtin.import_tasks: setup-Ubuntu.yml
   when: ansible_distribution == "Ubuntu"
 
 - name: 'Remove default motd'
