@@ -57,9 +57,12 @@
     line: if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi
   when: ansible_os_family == 'RedHat'
 
-- name: 'REDHAT8 | remove cockpit motd'
+- name: 'REDHAT8+ | remove default /etc/motd.d/*'
   become: true
   ansible.builtin.file:
-    path: '/etc/motd.d/cockpit'
+    path: "{{ item }}"
     state: absent
+  with_items:
+    - /etc/motd.d/cockpit
+    - /etc/motd.d/insights-client
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version != '7'
