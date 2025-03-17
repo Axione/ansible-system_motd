@@ -1,9 +1,5 @@
 ---
-#- name: "Include Redhat-7 tasks"
-#  import_tasks: setup-Redhat-7.yml
-#  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'
-
-- name: 'Install bc'
+- name: "Install bc"
   ansible.builtin.package:
     name: bc
   register: pkg_result
@@ -15,49 +11,49 @@
   ansible.builtin.import_tasks: setup-Ubuntu.yml
   when: ansible_distribution == "Ubuntu"
 
-- name: 'Remove default motd'
+- name: "Remove default motd"
   become: true
   ansible.builtin.file:
-    path: '/etc/motd'
+    path: "/etc/motd"
     state: absent
 
-- name: 'READHAT | Add motd folder'
+- name: "READHAT | Add motd folder"
   become: true
   ansible.builtin.file:
-    path: '/etc/update-motd.d/'
+    path: "/etc/update-motd.d/"
     state: directory
     owner: root
     group: root
-    mode: '755'
+    mode: "755"
   when: ansible_os_family == 'RedHat'
 
-- name: 'Add scripts on update-motd.d'
+- name: "Add scripts on update-motd.d"
   become: true
   ansible.builtin.template:
-    src: '{{ item }}.j2'
-    dest: '/etc/update-motd.d/{{ item }}'
+    src: "{{ item }}.j2"
+    dest: "/etc/update-motd.d/{{ item }}"
     owner: root
     group: root
-    mode: '755'
+    mode: "755"
   with_items:
     - "{{ motd_to_add }}"
 
-- name: 'Remove scripts on update-motd.d'
+- name: "Remove scripts on update-motd.d"
   become: true
   ansible.builtin.file:
-    path: '/etc/update-motd.d/{{ item }}'
+    path: "/etc/update-motd.d/{{ item }}"
     state: absent
   with_items:
     - "{{ motd_to_remove }}"
 
-- name: 'REDHAT | Add script on profile'
+- name: "REDHAT | Add script on profile"
   ansible.builtin.lineinfile:
     path: /etc/profile
-    regexp: '^if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi'
+    regexp: "^if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi"
     line: if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi
   when: ansible_os_family == 'RedHat'
 
-- name: 'REDHAT8+ | remove default /etc/motd.d/*'
+- name: "REDHAT8+ | remove default /etc/motd.d/*"
   become: true
   ansible.builtin.file:
     path: "{{ item }}"
