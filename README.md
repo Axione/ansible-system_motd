@@ -22,6 +22,7 @@
 ## Description
 
 Configure a cool dynamic motd
+
 ## Requirements
 
 none
@@ -39,7 +40,6 @@ See [variables](/defaults/main.yml) for more details.
           gather_facts: true
           roles:
             - role: ansible-system_motd
-
 
 ## License
 

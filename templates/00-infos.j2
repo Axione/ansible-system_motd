@@ -43,26 +43,26 @@ colorize_uptime () {
 colorize_memory () {
     MEMORY=$(free | grep Mem | awk '{printf "%2d", 100-(($6+$4+$5)/$2) * 100.0}')
     if [ "$MEMORY" -gt 90 ]; then
-        alert "$(free | grep Mem | awk '{printf "%.2f%%\t\t", 100-(($6+$4+$5)/$2) * 100.0}')"
+        alert "${MEMORY}%"
         return 100
     elif [ "$MEMORY" -gt 80 ] && [ "$MEMORY" -le 90 ] ; then
-        warning "$(free | grep Mem | awk '{printf "%.2f%%\t\t", 100-(($6+$4+$5)/$2) * 100.0}')"
+        warning "${MEMORY}%"
         return 1
     elif [ "$MEMORY" -le 80 ]; then
-        success "$(free | grep Mem | awk '{printf "%.2f%%\t\t", 100-(($6+$4+$5)/$2) * 100.0}')"
+        success "${MEMORY}%"
     fi
 }
 
 colorize_swap () {
     SWAP=$(free | grep Swap | awk '{printf "%2d", ($3+$6)/$2 * 100.0}')
     if [ "$SWAP" -gt 80 ]; then
-        alert "$(free | grep Swap | awk '{printf "%.2f%%\t\t", ($3+$6)/$2 * 100.0}')"
+        alert "${SWAP}%"
         return 100
-    elif [ "$SWAP" -gt 50 ] && [ "$MEMORY" -le 80 ] ; then
-        warning "$(free | grep Swap | awk '{printf "%.2f%%\t\t", ($3+$6)/$2 * 100.0}')"
+    elif [ "$SWAP" -gt 50 ] && [ "$SWAP" -le 80 ] ; then
+        warning "${SWAP}%"
         return 1
     elif [ "$SWAP" -le 50 ]; then
-        success "$(free | grep Swap | awk '{printf "%.2f%%\t\t", ($3+$6)/$2 * 100.0}')"
+        success "${SWAP}%"
     fi
 }
 
@@ -75,35 +75,42 @@ colorize_load () {
   #if load less than core = green
   #if load between core and core x2 = yellow
   #if load more than core x2 = red
+  status=0
+
+  # --- LOAD1 ---
   if [ "$(echo "${LOAD1} < ${SYS_CORE}" | bc)" -eq 1 ]; then
       success "${LOAD1} \c"
   elif [ "$(echo "${LOAD1} > ${SYS_CORE}" | bc)" -eq 1 ] && [ "$(echo "${LOAD1} < ${SYS_CORE_X2}" | bc)" -eq 1 ]; then
       warning "${LOAD1} \c"
-      return 1
+      [ $status -lt 1 ] && status=1
   elif [ "$(echo "${LOAD1} > ${SYS_CORE_X2}" | bc)" -eq 1 ]; then
-      alert "$LOAD1 \c"
-      return 100
+      alert "${LOAD1} \c"
+      status=100
   fi
 
+  # --- LOAD5 ---
   if [ "$(echo "${LOAD5} < ${SYS_CORE}" | bc)" -eq 1 ]; then
       success "${LOAD5} \c"
   elif [ "$(echo "${LOAD5} > ${SYS_CORE}" | bc)" -eq 1 ] && [ "$(echo "${LOAD5} < ${SYS_CORE_X2}" | bc)" -eq 1 ]; then
-      warning "$LOAD5 \c"
-      return 1
+      warning "${LOAD5} \c"
+      [ $status -lt 1 ] && status=1
   elif [ "$(echo "${LOAD5} > ${SYS_CORE_X2}" | bc)" -eq 1 ]; then
       alert "${LOAD5} \c"
-      return 100
+      status=100
   fi
 
+  # --- LOAD15 ---
   if [ "$(echo "${LOAD15} < ${SYS_CORE}" | bc)" -eq 1 ]; then
       success "${LOAD15}"
   elif [ "$(echo "${LOAD15} > ${SYS_CORE}" | bc)" -eq 1 ] && [ "$(echo "${LOAD15} < ${SYS_CORE_X2}" | bc)" -eq 1 ]; then
       warning "${LOAD15}"
-      return 1
+      [ $status -lt 1 ] && status=1
   elif [ "$(echo "${LOAD15} > ${SYS_CORE_X2}" | bc)" -eq 1 ]; then
       alert "${LOAD15}"
-      return 100
+      status=100
   fi
+
+  return $status
 }
 
 ################################
