@@ -9,7 +9,7 @@
 
 - name: "Include Ubuntu tasks"
   ansible.builtin.import_tasks: setup-Ubuntu.yml
-  when: ansible_distribution == "Ubuntu"
+  when: ansible_facts.distribution == "Ubuntu"
 
 - name: "Remove default motd"
   become: true
@@ -25,7 +25,7 @@
     owner: root
     group: root
     mode: "755"
-  when: ansible_os_family == 'RedHat'
+  when: ansible_facts.os_family == 'RedHat'
 
 - name: "Add scripts on update-motd.d"
   become: true
@@ -51,7 +51,7 @@
     path: /etc/profile
     regexp: "^if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi"
     line: if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi
-  when: ansible_os_family == 'RedHat'
+  when: ansible_facts.os_family == 'RedHat'
 
 - name: "REDHAT8+ | remove default /etc/motd.d/*"
   become: true
@@ -61,4 +61,4 @@
   with_items:
     - /etc/motd.d/cockpit
     - /etc/motd.d/insights-client
-  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version != '7'
+  when: ansible_facts.os_family == 'RedHat' and ansible_facts.distribution_major_version != '7'
