@@ -148,6 +148,24 @@ if [ "$PRIMARY_DISK" -eq 0 ]; then
 fi
 {% endif %}
 
+
+
+###################################
+# Ansible Roles
+ANSIBLE_CODE=0
+
+{% if motd_print_ansible_groups is sameas true %}
+ANSIBLE_GROUPS={{ group_names | join(',') }}
+if [ "$ANSIBLE_GROUPS" == "ungrouped" ]; then
+    alert "This VM is not part of any Ansible group."
+    ANSIBLE_CODE=100
+fi
+{% endif %}
+
+
+###################################
+# Print
+
 MSG_UPTIME=$(colorize_uptime)
 UPTIME_CODE=$?
 MSG_LOAD=$(colorize_load)
@@ -158,7 +176,7 @@ MSG_SWAP=$(colorize_swap)
 SWAP_CODE=$?
 
 STATE=0
-STATE=$((UPTIME_CODE + LOAD_CODE + MEMORY_CODE + SWAP_CODE + PRIMARY_DISK_CODE))
+STATE=$((UPTIME_CODE + LOAD_CODE + MEMORY_CODE + SWAP_CODE + PRIMARY_DISK_CODE + ANSIBLE_CODE))
 
 if [ "$STATE" -ge 100 ]; then MARGIN_COLOR=$MARGIN_ALERT_COLOR;
 elif [ "$STATE" -ge 1 ] ; then MARGIN_COLOR=$MARGIN_WARNING_COLOR;
@@ -174,5 +192,10 @@ echo -en " ${MARGIN_COLOR}█${COLOR_RESET} ${BOLD_GRAY} Hostname${COLOR_RESET}.
  ${MARGIN_COLOR}█${COLOR_RESET} ${BOLD_GRAY} Memory usage${COLOR_RESET}.........: $(echo "$MSG_MEMORY")
  ${MARGIN_COLOR}█${COLOR_RESET} ${BOLD_GRAY} Swap usage${COLOR_RESET}...........: $(echo "$MSG_SWAP")
  ${MARGIN_COLOR}█${COLOR_RESET} ${BOLD_GRAY} Disk usage${COLOR_RESET}...........: $(info "${DISK_USAGE}")
+{% if motd_print_processes is sameas true %}
  ${MARGIN_COLOR}█${COLOR_RESET} ${BOLD_GRAY} Processes${COLOR_RESET}............: $(info "${PSA}" running)
+{% endif %}
+{% if motd_print_ansible_groups is sameas true %}
+ ${MARGIN_COLOR}█${COLOR_RESET} ${BOLD_GRAY} Ansible Groups${COLOR_RESET}.......: $(info "${ANSIBLE_GROUPS}")
+{% endif %}
 "

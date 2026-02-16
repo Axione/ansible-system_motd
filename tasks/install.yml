@@ -1,15 +1,19 @@
 ---
-- name: "Install bc"
+- name: "Install requirements"
   ansible.builtin.package:
-    name: bc
+    name: "{{ motd_requirements }}"
   register: __pkg_result
   retries: 12
   delay: 10
   until: __pkg_result is success
 
-- name: "Include Ubuntu tasks"
-  ansible.builtin.import_tasks: setup-Ubuntu.yml
+- name: "REDHAT | Include tasks"
+  ansible.builtin.import_tasks: setup-ubuntu.yml
   when: ansible_facts.distribution == "Ubuntu"
+
+- name: "UBUNTU | Include tasks"
+  ansible.builtin.import_tasks: setup-redhat.yml
+  when: ansible_facts.os_family == 'RedHat'
 
 - name: "Remove default motd"
   become: true
@@ -17,48 +21,57 @@
     path: "/etc/motd"
     state: absent
 
-- name: "READHAT | Add motd folder"
+- name: "1/2 Remove all scripts"
+  ansible.builtin.find:
+    paths: "{{ __motd_config_path }}"
+    file_type: file
+  register: motd_files
+  when: motd_script_remove_all | bool
+
+- name: "2/2 Remove all scripts"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ motd_files.files }}"
+  when: motd_script_remove_all | bool
+
+- name: "Remove default scripts"
   become: true
   ansible.builtin.file:
-    path: "/etc/update-motd.d/"
-    state: directory
+    path: "{{ __motd_config_path }}/{{ item }}"
+    state: absent
+  loop: "{{ __motd_default_remove }}"
+  when:
+    - not motd_script_remove_all | bool
+    - motd_script_remove_default | bool
+
+- name: "Copy local scripts"
+  ansible.builtin.copy:
+    src: "{{ motd_script_local_path }}/"
+    dest: "{{ __motd_config_path }}/"
     owner: root
     group: root
-    mode: "755"
-  when: ansible_facts.os_family == 'RedHat'
+    mode: '0755'
+  when: motd_script_local_path | length > 0
 
-- name: "Add scripts on update-motd.d"
+- name: "Copy custom script"
   become: true
   ansible.builtin.template:
-    src: "{{ item }}.j2"
-    dest: "/etc/update-motd.d/{{ item }}"
+    src: "custom.j2"
+    dest: "{{ __motd_config_path }}/{{ item.name }}"
     owner: root
     group: root
     mode: "755"
   with_items:
-    - "{{ motd_to_add }}"
+    - "{{ motd_script_content }}"
+  when: motd_script_content | length > 0
 
-- name: "Remove scripts on update-motd.d"
+- name: "Copy default script"
   become: true
-  ansible.builtin.file:
-    path: "/etc/update-motd.d/{{ item }}"
-    state: absent
-  with_items:
-    - "{{ motd_to_remove }}"
-
-- name: "REDHAT | Add script on profile"
-  ansible.builtin.lineinfile:
-    path: /etc/profile
-    regexp: "^if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi"
-    line: if [ $UID -gt 199 ]; then /etc/update-motd.d/00-infos; fi
-  when: ansible_facts.os_family == 'RedHat'
-
-- name: "REDHAT8+ | remove default /etc/motd.d/*"
-  become: true
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - /etc/motd.d/cockpit
-    - /etc/motd.d/insights-client
-  when: ansible_facts.os_family == 'RedHat' and ansible_facts.distribution_major_version != '7'
+  ansible.builtin.template:
+    src: "infos.sh.j2"
+    dest: "{{ __motd_config_path }}/{{ motd_script_default_priority }}-infos.sh"
+    owner: root
+    group: root
+    mode: "755"
+  when: motd_script_default | bool
