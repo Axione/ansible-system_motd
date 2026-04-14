@@ -15,6 +15,14 @@
   ansible.builtin.import_tasks: setup-redhat.yml
   when: ansible_facts.os_family == 'RedHat'
 
+- name: "Comment pam_motd in sshd PAM config"
+  ansible.builtin.replace:
+    path: /etc/pam.d/sshd
+    regexp: '^(?!#)(session\s+optional\s+pam_motd\.so.*)'
+    replace: '# \1'
+    backup: true
+  when: motd_disable_pam_sshd
+
 - name: "Remove default motd"
   become: true
   ansible.builtin.file:

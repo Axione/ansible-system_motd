@@ -15,6 +15,7 @@ motd_check_boot_device: false
 motd_boot_device: sda
 motd_print_processes: false
 motd_print_ansible_groups: false
+motd_disable_pam_sshd: false
 
 # For redhat family we must add the list of running scripts
 motd_script_add_profile:
