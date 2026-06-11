@@ -78,7 +78,7 @@
   become: true
   ansible.builtin.template:
     src: "infos.sh.j2"
-    dest: "{{ __motd_config_path }}/{{ motd_script_default_priority }}-infos.sh"
+    dest: "{{ __motd_config_path }}/{{ motd_script_default_priority }}-infos"
     owner: root
     group: root
     mode: "755"
